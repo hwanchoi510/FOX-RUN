@@ -47,6 +47,13 @@ public class PlayerControl : MonoBehaviour
         return rc2d.collider != null;
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.name == "End")
+        {
+            rb.transform.position = new Vector2(GameObject.Find("Start").transform.position.x, rb.transform.position.y);
+        }
+    }
     private void Animate()
     {
         if (rb.velocity.y > 0)
