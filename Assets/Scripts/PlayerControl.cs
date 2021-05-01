@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerControl : MonoBehaviour
 {
@@ -18,13 +19,17 @@ public class PlayerControl : MonoBehaviour
     private Vector2 runOffset;
     private Vector2 crouchSize;
     private Vector2 crouchOffset;
-    private enum State {run, crouch, jump, fall };
+    private enum State {run, crouch, jump, fall, death};
     private State state;
+    private bool dead = false;
     private int ExtraJumps;
+    private GameObject GameOverText;
 
     // Start is called before the first frame update
     void Start()
     {
+        GameOverText = GameObject.Find("GameOver");
+        GameOverText.SetActive(false);
         rb = GetComponent<Rigidbody2D>();
         coll = GetComponent<BoxCollider2D>();
         anim = GetComponent<Animator>();
@@ -37,8 +42,11 @@ public class PlayerControl : MonoBehaviour
 
     void Update()
     {
-        Animate();
-        Movement();   
+        if (!dead)
+        {
+            Animate();
+            Movement();
+        }
     }
 
     private bool IsGrounded()
@@ -52,8 +60,23 @@ public class PlayerControl : MonoBehaviour
         if(collision.name == "End")
         {
             rb.transform.position = new Vector2(GameObject.Find("Start").transform.position.x, rb.transform.position.y);
+        } 
+        
+        if(collision.tag == "Obstacle")
+        {
+            MoveSpeed = 0;
+            rb.velocity = new Vector2(0, 0);
+            GameOverText.SetActive(true);
+            dead = true;
+            anim.SetTrigger("Death");
         }
     }
+
+    private void GameOver()
+    {
+        SceneManager.LoadScene("GameOver");
+    }
+
     private void Animate()
     {
         if (rb.velocity.y > 0)
