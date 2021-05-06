@@ -24,10 +24,13 @@ public class PlayerControl : MonoBehaviour
     private bool dead = false;
     private int ExtraJumps;
     private GameObject GameOverText;
+    private GameObject GameOverPanel;
 
     // Start is called before the first frame update
     void Start()
     {
+        GameOverPanel = GameObject.Find("GameOverPanel");
+        GameOverPanel.SetActive(false);
         GameOverText = GameObject.Find("GameOver");
         GameOverText.SetActive(false);
         rb = GetComponent<Rigidbody2D>();
@@ -66,9 +69,17 @@ public class PlayerControl : MonoBehaviour
         {
             MoveSpeed = 0;
             rb.velocity = new Vector2(0, 0);
+            GameOverPanel.SetActive(true);
             GameOverText.SetActive(true);
             dead = true;
             anim.SetTrigger("Death");
+        }
+
+        if (collision.gameObject.tag == "Collectible")
+        {
+            Animator cherryAnimator = collision.gameObject.GetComponent<Animator>();
+            cherryAnimator.SetTrigger("Collected");
+            GameUI.Score += 10000;
         }
     }
 
@@ -128,7 +139,5 @@ public class PlayerControl : MonoBehaviour
             coll.offset = runOffset;
             state = State.run;
         }
-
-        Debug.Log(state);
     }
 }
