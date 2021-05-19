@@ -14,6 +14,8 @@ public class PlayerControl : MonoBehaviour
     private Rigidbody2D rb;
     private BoxCollider2D coll;
     private Animator anim;
+    private int collectPoint;
+    private GameObject Collectibles;
 
     private Vector2 runSize;
     private Vector2 runOffset;
@@ -31,8 +33,7 @@ public class PlayerControl : MonoBehaviour
     {
         GameOverPanel = GameObject.Find("GameOverPanel");
         GameOverPanel.SetActive(false);
-        GameOverText = GameObject.Find("GameOver");
-        GameOverText.SetActive(false);
+        Collectibles = GameObject.Find("Collectibles");
         rb = GetComponent<Rigidbody2D>();
         coll = GetComponent<BoxCollider2D>();
         anim = GetComponent<Animator>();
@@ -41,6 +42,8 @@ public class PlayerControl : MonoBehaviour
         runOffset = new Vector2(coll.offset.x, coll.offset.y);
         crouchSize = new Vector2(coll.size.x, coll.size.y * 0.5f);
         crouchOffset = new Vector2(coll.offset.x, coll.offset.y - coll.size.y / 4);
+
+        collectPoint = 10000;
     }
 
     void Update()
@@ -63,6 +66,13 @@ public class PlayerControl : MonoBehaviour
         if(collision.name == "End")
         {
             rb.transform.position = new Vector2(GameObject.Find("Start").transform.position.x, rb.transform.position.y);
+            MoveSpeed += 0.5f;
+            rb.gravityScale += 0.1f;
+            collectPoint += 5000;
+            for(int i = 0; i < Collectibles.transform.childCount; i++)
+            {
+                Collectibles.transform.GetChild(i).gameObject.SetActive(true);
+            }
         } 
         
         if(collision.tag == "Obstacle")
@@ -70,7 +80,6 @@ public class PlayerControl : MonoBehaviour
             MoveSpeed = 0;
             rb.velocity = new Vector2(0, 0);
             GameOverPanel.SetActive(true);
-            GameOverText.SetActive(true);
             dead = true;
             anim.SetTrigger("Death");
         }
@@ -79,12 +88,13 @@ public class PlayerControl : MonoBehaviour
         {
             Animator cherryAnimator = collision.gameObject.GetComponent<Animator>();
             cherryAnimator.SetTrigger("Collected");
-            GameUI.Score += 10000;
+            GameUI.Score += collectPoint;
         }
     }
 
     private void GameOver()
     {
+        PlayerPrefs.SetInt("Score", GameUI.Score);
         SceneManager.LoadScene("GameOver");
     }
 
