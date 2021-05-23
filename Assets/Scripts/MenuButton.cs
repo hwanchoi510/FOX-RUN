@@ -15,4 +15,15 @@ public class MenuButton : MonoBehaviour
     {
         Application.Quit();
     }
+
+    public void ActivatePanel(GameObject Panel)
+    {
+        if (Panel.activeSelf)
+        {
+            Panel.SetActive(false);
+        } else
+        {
+            Panel.SetActive(true);
+        }
+    }
 }
