@@ -26,4 +26,11 @@ public class MenuButton : MonoBehaviour
             Panel.SetActive(true);
         }
     }
+
+    public void Unpause(GameObject Panel)
+    {
+        Panel.SetActive(false);
+        Time.timeScale = 1;
+        PlayerControl.Paused = false;
+    }
 }

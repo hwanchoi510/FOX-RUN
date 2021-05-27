@@ -10,6 +10,8 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private int ExtraJumpsNum;
     [SerializeField] private float ExtraJumpPower;
     [SerializeField] private LayerMask PlatformLayer;
+    [SerializeField] private GameObject PausePanel;
+    [SerializeField] private GameObject GameOverPanel;
 
     private Rigidbody2D rb;
     private BoxCollider2D coll;
@@ -24,15 +26,12 @@ public class PlayerControl : MonoBehaviour
     private enum State {run, crouch, jump, fall, death};
     private State state;
     private bool dead = false;
+    public static bool Paused = false;
     private int ExtraJumps;
-    private GameObject GameOverText;
-    private GameObject GameOverPanel;
 
     // Start is called before the first frame update
     void Start()
     {
-        GameOverPanel = GameObject.Find("GameOverPanel");
-        GameOverPanel.SetActive(false);
         Collectibles = GameObject.Find("Collectibles");
         rb = GetComponent<Rigidbody2D>();
         coll = GetComponent<BoxCollider2D>();
@@ -125,7 +124,7 @@ public class PlayerControl : MonoBehaviour
             ExtraJumps = ExtraJumpsNum;
         }
 
-        if (Input.GetButtonDown("Jump"))
+        if (Input.GetButtonDown("Jump") && !Paused)
         {
             if (IsGrounded())
             {
@@ -138,7 +137,7 @@ public class PlayerControl : MonoBehaviour
             }
         }
 
-        if (Input.GetKey(KeyCode.DownArrow) && IsGrounded())
+        if (Input.GetKey(KeyCode.DownArrow) && IsGrounded() && !Paused)
         {
             coll.size = crouchSize;
             coll.offset = crouchOffset;
@@ -148,6 +147,21 @@ public class PlayerControl : MonoBehaviour
             coll.size = runSize;
             coll.offset = runOffset;
             state = State.run;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (!Paused)
+            {
+                PausePanel.SetActive(true);
+                Time.timeScale = 0;
+                Paused = true;
+            } else
+            {
+                PausePanel.SetActive(false);
+                Time.timeScale = 1;
+                Paused = false;
+            }
         }
     }
 }
