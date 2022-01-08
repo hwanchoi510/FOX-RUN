@@ -40,7 +40,7 @@ public class PlayerControl : MonoBehaviour
         runSize = new Vector2(coll.size.x, coll.size.y);
         runOffset = new Vector2(coll.offset.x, coll.offset.y);
         crouchSize = new Vector2(coll.size.x, coll.size.y * 0.5f);
-        crouchOffset = new Vector2(coll.offset.x, coll.offset.y - coll.size.y / 4);
+        crouchOffset = new Vector2(coll.offset.x, coll.offset.y - coll.size.y / 4.0f);
 
         collectPoint = 10000;
     }
@@ -57,7 +57,7 @@ public class PlayerControl : MonoBehaviour
     private bool IsGrounded()
     {
         RaycastHit2D rc2d = Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, Vector2.down, 0.1f, PlatformLayer);
-        return rc2d.collider != null;
+        return rc2d.collider != null && rb.velocity.y > -0.0001f && rb.velocity.y < 0.0001f;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -99,11 +99,11 @@ public class PlayerControl : MonoBehaviour
 
     private void Animate()
     {
-        if (rb.velocity.y > 0)
+        if (rb.velocity.y > 0.0001f)
         {
             state = State.jump;
         }
-        else if (rb.velocity.y < 0)
+        else if (rb.velocity.y < -0.0001f)
         {
             state = State.fall;
         }
@@ -111,7 +111,6 @@ public class PlayerControl : MonoBehaviour
         {
             state = State.run;
         }
-
         anim.SetInteger("State", (int)state);
     }
 
@@ -121,6 +120,7 @@ public class PlayerControl : MonoBehaviour
 
         if (IsGrounded())
         {
+            Debug.Log("reset");
             ExtraJumps = ExtraJumpsNum;
         }
 
