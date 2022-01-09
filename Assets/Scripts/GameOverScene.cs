@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class GameOverScene : MonoBehaviour
 {
+    [SerializeField] AudioSource Sound;
     void Start()
     {
         Text FinalScoreText = GameObject.Find("ScoreNumber").GetComponent<Text>();
@@ -17,7 +18,14 @@ public class GameOverScene : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.Return))
         {
-            SceneManager.LoadScene("MainMenu");
+            StartCoroutine(PlaySound(Sound, "MainMenu"));
         }
+    }
+
+    private IEnumerator PlaySound(AudioSource sound, string Name)
+    {
+        sound.Play();
+        yield return new WaitForSeconds(sound.clip.length);
+        SceneManager.LoadScene(Name);
     }
 }

@@ -10,7 +10,6 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private int ExtraJumpsNum;
     [SerializeField] private float ExtraJumpPower;
     [SerializeField] private LayerMask PlatformLayer;
-    [SerializeField] private GameObject PausePanel;
     [SerializeField] private GameObject GameOverPanel;
 
     private Rigidbody2D rb;
@@ -79,6 +78,7 @@ public class PlayerControl : MonoBehaviour
             MoveSpeed = 0;
             rb.velocity = new Vector2(0, 0);
             GameOverPanel.SetActive(true);
+            GameObject.Find("Death").GetComponent<AudioSource>().Play();
             dead = true;
             anim.SetTrigger("Death");
         }
@@ -86,6 +86,7 @@ public class PlayerControl : MonoBehaviour
         if (collision.gameObject.tag == "Collectible")
         {
             Animator cherryAnimator = collision.gameObject.GetComponent<Animator>();
+            GameObject.Find("Item").GetComponent<AudioSource>().Play();
             cherryAnimator.SetTrigger("Collected");
             GameUI.Score += collectPoint;
         }
@@ -120,7 +121,6 @@ public class PlayerControl : MonoBehaviour
 
         if (IsGrounded())
         {
-            Debug.Log("reset");
             ExtraJumps = ExtraJumpsNum;
         }
 
@@ -128,10 +128,12 @@ public class PlayerControl : MonoBehaviour
         {
             if (IsGrounded())
             {
+                GameObject.Find("Jump").GetComponent<AudioSource>().Play();
                 rb.velocity = new Vector2(MoveSpeed, JumpPower);
             }
             else if (ExtraJumps > 0)
             {
+                GameObject.Find("Jump").GetComponent<AudioSource>().Play();
                 rb.velocity = new Vector2(MoveSpeed, ExtraJumpPower);
                 ExtraJumps--;
             }
@@ -149,19 +151,5 @@ public class PlayerControl : MonoBehaviour
             state = State.run;
         }
 
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (!Paused)
-            {
-                PausePanel.SetActive(true);
-                Time.timeScale = 0;
-                Paused = true;
-            } else
-            {
-                PausePanel.SetActive(false);
-                Time.timeScale = 1;
-                Paused = false;
-            }
-        }
     }
 }

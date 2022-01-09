@@ -5,20 +5,22 @@ using UnityEngine.SceneManagement;
 
 public class MenuButton : MonoBehaviour
 {
+    [SerializeField] AudioSource Sound;
     public void ChangeScene(string SceneName)
     {
-        SceneManager.LoadScene(SceneName);
-
+        StartCoroutine(PlaySound(Sound, SceneName));
     }
 
     public void ExitGame()
     {
+        Sound.Play();
         Application.Quit();
     }
 
     public void ActivatePanel(GameObject Panel)
     {
-        if (Panel.activeSelf)
+        Sound.Play();
+        if(Panel.activeSelf)
         {
             Panel.SetActive(false);
         } else
@@ -27,10 +29,10 @@ public class MenuButton : MonoBehaviour
         }
     }
 
-    public void Unpause(GameObject Panel)
+    private IEnumerator PlaySound(AudioSource sound, string Name)
     {
-        Panel.SetActive(false);
-        Time.timeScale = 1;
-        PlayerControl.Paused = false;
+        sound.Play();
+        yield return new WaitForSeconds(sound.clip.length);
+        SceneManager.LoadScene(Name);
     }
 }

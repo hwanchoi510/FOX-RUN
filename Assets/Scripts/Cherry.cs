@@ -5,7 +5,7 @@ using UnityEngine;
 public class Cherry : MonoBehaviour
 {
     void Get()
-    {
+    { 
         this.gameObject.SetActive(false);
     }
 }
