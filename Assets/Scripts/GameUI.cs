@@ -52,7 +52,7 @@ public class GameUI : MonoBehaviour
     {
         Sound.Play();
         PauseMenuUI.SetActive(false);
-        Time.timeScale = 1;
+        Time.timeScale = PlayerControl.scale;
         isPaused = false;
     }
 

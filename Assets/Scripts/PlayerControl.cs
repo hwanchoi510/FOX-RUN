@@ -17,6 +17,7 @@ public class PlayerControl : MonoBehaviour
     private Animator anim;
     private int collectPoint;
     private GameObject Collectibles;
+    public static float scale;
 
     private Vector2 runSize;
     private Vector2 runOffset;
@@ -25,7 +26,6 @@ public class PlayerControl : MonoBehaviour
     private enum State {run, crouch, jump, fall, death};
     private State state;
     private bool dead = false;
-    public static bool Paused = false;
     private int ExtraJumps;
 
     // Start is called before the first frame update
@@ -35,6 +35,7 @@ public class PlayerControl : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         coll = GetComponent<BoxCollider2D>();
         anim = GetComponent<Animator>();
+        scale = 1.0f;
 
         runSize = new Vector2(coll.size.x, coll.size.y);
         runOffset = new Vector2(coll.offset.x, coll.offset.y);
@@ -64,8 +65,8 @@ public class PlayerControl : MonoBehaviour
         if(collision.name == "End")
         {
             rb.transform.position = new Vector2(GameObject.Find("Start").transform.position.x, rb.transform.position.y);
-            MoveSpeed += 0.5f;
-            rb.gravityScale += 0.1f;
+            Time.timeScale += 0.5f;
+            scale += 0.5f;
             collectPoint += 5000;
             for(int i = 0; i < Collectibles.transform.childCount; i++)
             {
@@ -76,6 +77,7 @@ public class PlayerControl : MonoBehaviour
         if(collision.tag == "Obstacle")
         {
             MoveSpeed = 0;
+            Time.timeScale = 1.0f;
             rb.velocity = new Vector2(0, 0);
             GameOverPanel.SetActive(true);
             GameObject.Find("Death").GetComponent<AudioSource>().Play();
@@ -124,7 +126,7 @@ public class PlayerControl : MonoBehaviour
             ExtraJumps = ExtraJumpsNum;
         }
 
-        if (Input.GetButtonDown("Jump") && !Paused)
+        if (Input.GetButtonDown("Jump") && !GameUI.isPaused)
         {
             if (IsGrounded())
             {
@@ -139,7 +141,7 @@ public class PlayerControl : MonoBehaviour
             }
         }
 
-        if (Input.GetKey(KeyCode.DownArrow) && IsGrounded() && !Paused)
+        if (Input.GetKey(KeyCode.DownArrow) && IsGrounded() && !GameUI.isPaused)
         {
             coll.size = crouchSize;
             coll.offset = crouchOffset;
